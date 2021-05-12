@@ -10,8 +10,8 @@ score = 0
 # music
 pygame.mixer.music.load("music/Uplifting-and-inspiring-intro-music.mp3")
 pygame.mixer.music.play(-1)
-collisionMusic=pygame.mixer.Sound("music/mixkit-sea-mine-explosion-1184.wav")
-game_over_sound=pygame.mixer.Sound("music/mixkit-sad-game-over-trombone-471.wav")
+collisionMusic = pygame.mixer.Sound("music/mixkit-sea-mine-explosion-1184.wav")
+game_over_sound = pygame.mixer.Sound("music/mixkit-sad-game-over-trombone-471.wav")
 
 # Background
 pygame.display.set_caption("Space invader")
@@ -66,6 +66,7 @@ def is_collision(alien_x, alien_y, bullet_x, bullet_y):
     else:
         return False
 
+
 def is_collision_with_player(alien_x, alien_y, bullet_x, bullet_y):
     distance = math.sqrt(math.pow(alien_x - bullet_x, 2) + math.pow(alien_y - bullet_y, 2))
     if distance < 40:
@@ -73,18 +74,23 @@ def is_collision_with_player(alien_x, alien_y, bullet_x, bullet_y):
     else:
         return False
 
+
 # adding score as text
-font=pygame.font.Font("freesansbold.ttf",30)
+font = pygame.font.Font("freesansbold.ttf", 30)
+
 
 def scoreText(x):
-    return font.render(f"Score: {x}",True,(0,255,0))
+    return font.render(f"Score: {x}", True, (0, 255, 0))
+
 
 # Game Over text
-game_over=pygame.font.Font("freesansbold.ttf",50)
-over_status="not over"
+game_over = pygame.font.Font("freesansbold.ttf", 50)
+over_status = "not over"
+
 
 def gameOver():
-    return game_over.render(f"GAME OVER",True,(0,255,0))
+    return game_over.render(f"GAME OVER", True, (0, 255, 0))
+
 
 run = True
 while run:
@@ -119,18 +125,17 @@ while run:
 
     for i in range(alien_num):
         alien_height[i] += alien_speed[i]
-        if alien_height[i]>590:
-            alien_height[i]=random.randint(-100, 0)
+        if alien_height[i] > 590:
+            alien_height[i] = random.randint(-100, 0)
         draw_alien(alien_width[i], alien_height[i], i)
 
-        if is_collision_with_player(alien_width[i],alien_height[i],player_X,player_Y):
-            over_status="over"
+        if is_collision_with_player(alien_width[i], alien_height[i], player_X, player_Y):
+            over_status = "over"
 
         if is_collision(alien_width[i], alien_height[i], bullet_width, bullet_height):
             alien_width[i] = random.randint(0, 450)
             alien_height[i] = random.randint(-100, 0)
             score += 1
-            print(score)
             scoreText(score)
             collisionMusic.play()
     screen.blit(scoreText(score), (20, 20))
@@ -140,5 +145,3 @@ while run:
             alien_width[i] = 2000
             pygame.mixer.music.stop()
             game_over_sound.play()
-
-
