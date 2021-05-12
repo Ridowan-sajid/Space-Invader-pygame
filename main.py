@@ -51,7 +51,7 @@ for i in range(alien_num):
     alien_img.append(pygame.image.load("image/rocket.png"))
     alien_width.append(random.randint(0, 450))
     alien_height.append(random.randint(-100, 0))
-    alien_speed.append(0.1)
+    alien_speed.append(0.3)
 
 
 def draw_alien(alien_w, alien_h, i):
@@ -69,7 +69,7 @@ def is_collision(alien_x, alien_y, bullet_x, bullet_y):
 
 def is_collision_with_player(alien_x, alien_y, bullet_x, bullet_y):
     distance = math.sqrt(math.pow(alien_x - bullet_x, 2) + math.pow(alien_y - bullet_y, 2))
-    if distance < 40:
+    if distance < 30:
         return True
     else:
         return False
