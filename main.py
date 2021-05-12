@@ -1,15 +1,22 @@
 import math
-
 import pygame
 import random
 
 pygame.init()
 screen_width = 500
 screen_height = 600
+score = 0
 
+# music
+pygame.mixer.music.load("music/Uplifting-and-inspiring-intro-music.mp3")
+pygame.mixer.music.play(-1)
+collisionMusic=pygame.mixer.Sound("music/mixkit-sea-mine-explosion-1184.wav")
+game_over_sound=pygame.mixer.Sound("music/mixkit-sad-game-over-trombone-471.wav")
+
+# Background
 pygame.display.set_caption("Space invader")
 screen = pygame.display.set_mode((screen_width, screen_height))
-bg_image = pygame.image.load("v907-aum-41.jpg")
+bg_image = pygame.image.load("image/v907-aum-41.jpg")
 
 # Main player
 player_img = pygame.image.load("image/space-shuttle.png")
@@ -25,7 +32,7 @@ def draw_player(player_X, player_Y):
 bullet_width = 0
 bullet_height = player_Y
 bullet_speed = 0.5
-bullet_img = pygame.image.load("bullet.png")
+bullet_img = pygame.image.load("image/bullet.png")
 bullet_status = "ready"
 
 
@@ -51,35 +58,36 @@ def draw_alien(alien_w, alien_h, i):
     screen.blit(alien_img[i], (alien_w, alien_h))
 
 
-# ALien bullet firing
-alien_bullet_width = []
-alien_bullet_height = []
-alien_bullet_speed = []
-alien_bullet_img = []
-alien_bullet_status = []
-for i in range(alien_num):
-    alien_bullet_width.append(0)
-    alien_bullet_height.append(alien_height[i])
-    alien_bullet_speed.append(0.3)
-    alien_bullet_img.append(pygame.image.load("enemyBullet.png"))
-    alien_bullet_status.append("False")
-
-
-def alien_bullet_firing(alien_x, alien_y, i):
-    screen.blit(alien_bullet_img[i], (alien_x, alien_y))
-
-
+# check Collision
 def is_collision(alien_x, alien_y, bullet_x, bullet_y):
+    distance = math.sqrt(math.pow(alien_x - bullet_x, 2) + math.pow(alien_y - bullet_y, 2))
+    if distance < 20:
+        return True
+    else:
+        return False
+
+def is_collision_with_player(alien_x, alien_y, bullet_x, bullet_y):
     distance = math.sqrt(math.pow(alien_x - bullet_x, 2) + math.pow(alien_y - bullet_y, 2))
     if distance < 40:
         return True
     else:
         return False
 
+# adding score as text
+font=pygame.font.Font("freesansbold.ttf",30)
+
+def scoreText(x):
+    return font.render(f"Score: {x}",True,(0,255,0))
+
+# Game Over text
+game_over=pygame.font.Font("freesansbold.ttf",50)
+over_status="not over"
+
+def gameOver():
+    return game_over.render(f"GAME OVER",True,(0,255,0))
 
 run = True
 while run:
-    guess = random.randint(0, 200)
     pygame.display.update()
     screen.blit(bg_image, (0, 0))
     for event in pygame.event.get():
@@ -110,19 +118,27 @@ while run:
         bullet_height -= bullet_speed
 
     for i in range(alien_num):
-
-        if guess == 3:
-            alien_bullet_status[i] = "True"
-        if alien_bullet_status[i] == "True":
-            alien_bullet_height[i] += alien_bullet_speed[i]
-            alien_bullet_firing(alien_width[i] + 20, alien_bullet_height[i] + 60, i)
-
         alien_height[i] += alien_speed[i]
         if alien_height[i]>590:
             alien_height[i]=random.randint(-100, 0)
         draw_alien(alien_width[i], alien_height[i], i)
 
+        if is_collision_with_player(alien_width[i],alien_height[i],player_X,player_Y):
+            over_status="over"
+
         if is_collision(alien_width[i], alien_height[i], bullet_width, bullet_height):
-            print("hello")
             alien_width[i] = random.randint(0, 450)
             alien_height[i] = random.randint(-100, 0)
+            score += 1
+            print(score)
+            scoreText(score)
+            collisionMusic.play()
+    screen.blit(scoreText(score), (20, 20))
+    if over_status == "over":
+        screen.blit(gameOver(), (100, 300))
+        for i in range(alien_num):
+            alien_width[i] = 2000
+            pygame.mixer.music.stop()
+            game_over_sound.play()
+
+
